@@ -7,7 +7,13 @@ import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as path;
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.130.50:5000';
+  // Update this to match your backend URL
+  // Using computer's actual IP (192.168.0.55) because 10.0.2.2 is blocked
+  // For local development: http://localhost:3003/api/v1
+  // For Android emulator: http://192.168.0.55:3003/api/v1 (your backend port is 3003)
+  // For iOS simulator: http://localhost:3003/api/v1
+  // For physical device: http://192.168.0.55:3003/api/v1
+  static const String baseUrl = 'http://192.168.0.29:3003/api/v1';
   static const Duration requestTimeout = Duration(seconds: 30);
   static const Duration connectivityTimeout = Duration(seconds: 10);
   
@@ -208,16 +214,17 @@ class ApiService {
 
   /// Perform the actual upload with enhanced request configuration
   static Future<UploadResult> _performUpload(
-    Uint8List imageBytes, 
-    String fileName, 
-    int fileSize, 
+    Uint8List imageBytes,
+    String fileName,
+    int fileSize,
     String fileExtension
   ) async {
     try {
       // Create multipart request
+      // Backend expects /measurements/process, not /upload
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('$baseUrl/upload'),
+        Uri.parse('$baseUrl/measurements/process'),
       );
 
       // Determine content type

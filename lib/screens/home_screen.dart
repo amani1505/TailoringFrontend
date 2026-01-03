@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'measurement_screen.dart';
+import 'measurement_capture_screen.dart'; // NEW: 2-image screen
+import '../services/user_manager.dart'; // NEW: User management
+import '../widgets/user_registration_bottom_sheet.dart'; // NEW: Registration
+import '../models/user_model.dart';
 import 'history_screen.dart';
 import 'settings_screen.dart';
 
@@ -115,15 +119,62 @@ class _HomeScreenState extends State<HomeScreen>
                             subtitle: 'Take a photo or upload from gallery',
                             icon: Icons.camera_alt,
                             color: Colors.blue,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MeasurementScreen(
-                                    camera: widget.cameras.first,
+                            onTap: () async {
+                              // Check if user already exists
+                              if (UserManager.isLoggedIn()) {
+                                // User exists, go directly to measurement
+                                final userId = await UserManager.getCurrentUserId();
+                                final userHeight = await UserManager.getUserHeight();
+                                final userGender = await UserManager.getUserGender();
+
+                                if (!context.mounted) return;
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MeasurementCaptureScreen(
+                                      camera: widget.cameras.first,
+                                      userId: userId,
+                                      userHeight: userHeight,
+                                      userGender: userGender,
+                                    ),
                                   ),
-                                ),
-                              );
+                                );
+                              } else {
+                                // Show registration bottom sheet first
+                                final result = await showModalBottomSheet<User>(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.transparent,
+                                  isDismissible: true,
+                                  enableDrag: true,
+                                  builder: (BuildContext sheetContext) => UserRegistrationBottomSheet(
+                                    onUserCreated: (User user) {
+                                      // User created successfully
+                                      // Store in UserManager
+                                      UserManager.setCurrentUser(user);
+
+                                      // Return user to close bottom sheet
+                                      Navigator.of(sheetContext).pop(user);
+                                    },
+                                  ),
+                                );
+
+                                // After bottom sheet closes, navigate to measurement
+                                if (result != null && context.mounted) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MeasurementCaptureScreen(
+                                        camera: widget.cameras.first,
+                                        userId: result.id,
+                                        userHeight: result.height ?? 170.0,
+                                        userGender: result.gender ?? 'male',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
                             },
                           ),
                           
