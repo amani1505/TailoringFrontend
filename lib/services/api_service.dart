@@ -13,7 +13,7 @@ class ApiService {
   // For Android emulator: http://192.168.0.55:3003/api/v1 (your backend port is 3003)
   // For iOS simulator: http://localhost:3003/api/v1
   // For physical device: http://192.168.0.55:3003/api/v1
-  static const String baseUrl = 'http://192.168.0.29:3003/api/v1';
+  static const String baseUrl = 'https://tailoring-api.romanixtz.com/api/v1';
   static const Duration requestTimeout = Duration(seconds: 30);
   static const Duration connectivityTimeout = Duration(seconds: 10);
   
