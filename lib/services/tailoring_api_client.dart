@@ -14,10 +14,10 @@ import '../models/tailor_model.dart';
 /// - iOS Simulator: http://localhost:3000/api/v1
 /// - Physical Device: http://<your-computer-ip>:3000/api/v1
 class TailoringApiClient {
-  // Change this based on your environment
-  // Using your computer's actual IP address (192.168.0.55)
-  // because 10.0.2.2 is being blocked by firewall
-  static const String baseUrl = 'http://192.168.0.29:3003/api/v1';
+  // Production URL - same as api_service.dart
+  // For local development: http://192.168.0.29:3003/api/v1
+  // For production: https://tailoring-api.romanixtz.com/api/v1
+  static const String baseUrl = 'https://tailoring-api.romanixtz.com/api/v1';
   static const Duration timeout = Duration(seconds: 30);
 
   // ============ HEALTH CHECK ============
